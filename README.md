@@ -1,5 +1,41 @@
-# Partial-It LoadLogic Planner Prototype
+# Partial-It CAD Planner Prototype
 
-v1.2 update includes bounded drag, snap-to-grid, rotate, top/rear/3D views, locked existing freight, new-load intake, ranked capacity opportunities, revenue/fuel itemization, and LoadLogic manual/optimized plan behavior.
+High-fidelity React/Vite prototype for Partial-It.
 
-Deploy by replacing app files in GitHub and committing to `main`.
+## Included
+
+- Mobile-first iOS-style app shell
+- CAD-style truck trailer planner
+- 3D volume-rendered cargo blocks
+- Top, Rear, Side, and 45° Perspective views
+- Bounded dragging
+- Snap-to-grid behavior
+- Rotation
+- Collision detection with red invalid cargo
+- Locked existing freight for partial load review
+- LoadLogic default arrangement
+- Manual rearrangement mode
+- Optimize Load resets to the LoadLogic default
+- Undo/Redo for manual moves and optimization
+- New Load intake: upload document or manual pallet entry
+- Capacity opportunity ranking
+- Revenue, fuel cost, and estimated profit cards
+- Scrollable pages
+
+## Deploy to GitHub Pages
+
+If `.github/workflows/deploy.yml` already exists in your repo, you do not need to upload it again.
+
+Upload or replace:
+
+```text
+README.md
+index.html
+package.json
+src/
+vite.config.js
+```
+
+Then commit to `main`. GitHub Actions will redeploy automatically.
+
+If you are creating a fresh repo, upload the `.github` folder too.
