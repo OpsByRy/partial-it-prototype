@@ -1,4 +1,4 @@
-export const truckSpec = { name:"2022 Ford E-450 Box Truck", type:"26 ft Box Truck", interiorLength:312, interiorWidth:96, interiorHeight:102, payloadLimit:8900, mpg:10.1, gasPrice:3.42 };
+export const truckSpec = { name:"53' Dry Van", type:"53 ft Dry Van", interiorLength:636, interiorWidth:100, interiorHeight:110, payloadLimit:45000, mpg:6.8, gasPrice:3.42 };
 export const existingLoad = { id:"newark-philly", name:"Newark, NJ → Philadelphia, PA", status:"Optimized", revenue:1180, fuelCost:96, miles:94, score:92, utilization:74, weight:3350 };
 export const opportunities = [
  { id:"edison", loadId:"PL-2026-001", title:"Edison, NJ → Cherry Hill, NJ", route:"Along route", effort:"No rearrangements", revenue:285, fuelCost:18, confidence:96, dims:"2 pallets • 48×40×46", weight:1420 },
@@ -10,20 +10,20 @@ export const opportunities = [
 ];
 export const opportunityRank = {"No rearrangements":1,"Minimal rearrangements":2,"Moderate rearrangements":3,"Heavy rearrangements":4,"Along route":1,"Slight detour":2,"Moderate detour":3};
 export const loadLogicPlan = [
- { id:"ATL-0023", label:"P1", x:16, y:10, z:0, w:48, d:40, h:36, weight:950, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"PHL-0045", label:"P2", x:68, y:10, z:0, w:48, d:40, h:40, weight:1100, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"TRE-0012", label:"P3", x:120, y:10, z:0, w:48, d:40, h:48, weight:1000, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"LEX-0033", label:"P4", x:172, y:10, z:0, w:48, d:40, h:36, weight:925, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"BUF-0066", label:"P5", x:16, y:54, z:0, w:48, d:40, h:40, weight:1050, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"ALB-0077", label:"P6", x:68, y:54, z:0, w:48, d:40, h:36, weight:875, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"SYR-0099", label:"P7", x:120, y:54, z:0, w:48, d:40, h:32, weight:850, layer:0, stackable:true, locked:false, group:"existing" },
- { id:"TOP-1001", label:"S1", x:68, y:10, z:40, w:48, d:40, h:28, weight:420, layer:1, stackable:false, locked:false, group:"existing", parentId:"PHL-0045" }
+ { id:"P001", loadId:"FTL-2026-014", label:"P001", type:"pallet", length:48, width:40, height:36, weight:950, stackable:true, maxStackWeight:1600, canRotate:true, orientation:0, x:24, y:8, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"P002", loadId:"FTL-2026-014", label:"P002", type:"pallet", length:48, width:40, height:40, weight:1100, stackable:true, maxStackWeight:1600, canRotate:true, orientation:0, x:78, y:8, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"P003", loadId:"FTL-2026-014", label:"P003", type:"pallet", length:48, width:40, height:48, weight:1000, stackable:true, maxStackWeight:1500, canRotate:true, orientation:0, x:132, y:8, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"P004", loadId:"FTL-2026-014", label:"P004", type:"pallet", length:48, width:40, height:36, weight:925, stackable:true, maxStackWeight:1600, canRotate:true, orientation:0, x:186, y:8, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"CR001", loadId:"FTL-2026-014", label:"CR001", type:"crate", length:56, width:42, height:46, weight:1050, stackable:true, maxStackWeight:1200, canRotate:true, orientation:0, x:24, y:52, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"P005", loadId:"FTL-2026-014", label:"P005", type:"pallet", length:48, width:40, height:36, weight:875, stackable:true, maxStackWeight:1600, canRotate:true, orientation:0, x:86, y:52, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"C001", loadId:"FTL-2026-014", label:"C001", type:"carton stack", length:48, width:40, height:32, weight:850, stackable:true, maxStackWeight:900, canRotate:true, orientation:0, x:140, y:52, z:0, locked:false, group:"existing", status:"optimized" },
+ { id:"C002", loadId:"FTL-2026-014", label:"C002", type:"carton stack", length:48, width:40, height:28, weight:420, stackable:false, maxStackWeight:0, canRotate:true, orientation:0, x:78, y:8, z:40, locked:false, group:"existing", status:"optimized", parentId:"P002" }
 ];
 export const partialItems = [
- { id:"WIL-0101", label:"N1", x:224, y:10, z:0, w:48, d:40, h:36, weight:900, layer:0, stackable:true, locked:false, group:"new" },
- { id:"HBG-0330", label:"N2", x:224, y:54, z:0, w:40, d:40, h:40, weight:850, layer:0, stackable:true, locked:false, group:"new" },
- { id:"YRD-0440", label:"N3", x:172, y:54, z:0, w:48, d:40, h:28, weight:700, layer:0, stackable:true, locked:false, group:"new" },
- { id:"PIT-0550", label:"S2", x:172, y:54, z:28, w:48, d:40, h:32, weight:950, layer:1, stackable:false, locked:false, group:"new", parentId:"YRD-0440" }
+ { id:"P006", loadId:"PL-2026-001", label:"P006", type:"pallet", length:48, width:40, height:36, weight:900, stackable:true, maxStackWeight:1400, canRotate:true, orientation:0, x:254, y:8, z:0, locked:false, group:"new", status:"incoming" },
+ { id:"D001", loadId:"PL-2026-001", label:"D001", type:"drum pallet", length:40, width:40, height:40, weight:850, stackable:true, maxStackWeight:1000, canRotate:false, orientation:0, x:254, y:52, z:0, locked:false, group:"new", status:"incoming" },
+ { id:"A001", loadId:"PL-2026-001", label:"A001", type:"appliance", length:48, width:40, height:28, weight:700, stackable:true, maxStackWeight:950, canRotate:true, orientation:0, x:308, y:52, z:0, locked:false, group:"new", status:"incoming" },
+ { id:"C003", loadId:"PL-2026-001", label:"C003", type:"carton stack", length:48, width:40, height:32, weight:950, stackable:false, maxStackWeight:0, canRotate:true, orientation:0, x:308, y:52, z:28, locked:false, group:"new", status:"incoming", parentId:"A001" }
 ];
 export const cargoTemplates = [
  { name:"Standard Pallet", dims:"48 × 40 × 52 in", weight:"880 lbs", rules:"Stackable • Rotatable" },
