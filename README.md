@@ -1,16 +1,5 @@
-# Partial-It Prototype
+# Partial-It LoadLogic Planner Prototype
 
-Updated interactive React/Vite prototype for Partial-It.
+v1.2 update includes bounded drag, snap-to-grid, rotate, top/rear/3D views, locked existing freight, new-load intake, ranked capacity opportunities, revenue/fuel itemization, and LoadLogic manual/optimized plan behavior.
 
-## v1.1 Updates
-
-- Draggable cargo blocks in Load Workspace
-- Manual cargo repositioning simulation
-- Remaining capacity click-through
-- Additional partial load opportunity flow
-- Accept/reject partial load interaction
-- Updated LoadLogic results after accepting the additional freight
-
-## Deploy
-
-Upload/replace these files in GitHub and commit to `main`. GitHub Actions will redeploy automatically.
+Deploy by replacing app files in GitHub and committing to `main`.

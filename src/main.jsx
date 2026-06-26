@@ -1,241 +1,71 @@
 
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  Home, Truck, Boxes, ClipboardList, User, Plus, Zap, Share2,
-  CheckCircle2, MapPin, DollarSign, Move, PackagePlus, X
-} from 'lucide-react'
+import { Home, Truck, Boxes, ClipboardList, User, Plus, Zap, CheckCircle2, Move, RotateCw, Undo2, Redo2, Lock, Upload, PencilRuler, SlidersHorizontal } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { trucks, cargo, partialOpportunities } from './data/mockData.js'
+import { routeLoads, opportunities, opportunityRank, optimizedCargo, lockedExistingCargo, partialCargo } from './data/mockData.js'
 import './styles.css'
 
-const tabs = [
-  ['home', 'Home', Home],
-  ['garage', 'Garage', Truck],
-  ['loads', 'Loads', ClipboardList],
-  ['cargo', 'Cargo', Boxes],
-  ['profile', 'Profile', User],
-]
+const tabs = [['home','Home',Home],['garage','Garage',Truck],['loads','Loads',ClipboardList],['cargo','Cargo',Boxes],['profile','Profile',User]]
+const SNAP = 8, BED_W = 330, BED_H = 260
+const snap = v => Math.round(v / SNAP) * SNAP
+const effortScore = e => opportunityRank[e] || 9
+const sortedOpps = list => [...list].sort((a,b)=> (b.revenue-a.revenue) || (effortScore(a.effort)-effortScore(b.effort)) || (effortScore(a.route)-effortScore(b.route)))
+const overlap = (a,b) => a.id!==b.id && a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y
+const markInvalid = items => items.map(item => ({...item, invalid: !item.locked && items.some(other => overlap(item, other))}))
+function Header({ kicker='Partial-It', title, subtitle }){ return <div className="header"><div className="kicker">{kicker}</div><h1>{title}</h1><p className="subtitle">{subtitle}</p></div> }
+function Money({value}){ return <>{value.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})}</> }
 
-const initialBoxes = [
-  { id: 'P1', label: 'P1', x: 18, y: 24, w: 82, h: 66 },
-  { id: 'P2', label: 'P2', x: 108, y: 24, w: 82, h: 66 },
-  { id: 'P3', label: 'P3', x: 198, y: 24, w: 82, h: 66 },
-  { id: 'CRATE', label: 'CRATE', x: 18, y: 106, w: 118, h: 82 },
-  { id: 'FURN', label: 'FURN', x: 146, y: 106, w: 108, h: 82 },
-]
-
-function Header({ kicker='Partial-It', title, subtitle }) {
-  return <div className="header"><div className="kicker">{kicker}</div><h1>{title}</h1><p className="subtitle">{subtitle}</p></div>
-}
-
-function HomeScreen({ setTab }) {
-  return <>
-    <Header title="Know Before You Load." subtitle="Plan, optimize, and share freight loads before the dock." />
-    <div className="content">
-      <div className="card hero">
-        <div className="row"><span className="pill">LoadLogic Ready</span><Zap /></div>
-        <div><div className="big">$428</div><p className="subtitle">Estimated revenue opportunity from open capacity this week.</p></div>
-      </div>
-      <div className="grid">
-        <button className="primary" onClick={() => setTab('loads')}><Plus size={18}/> New Load</button>
-        <button className="secondary" onClick={() => setTab('garage')}><Truck size={18}/> Add Truck</button>
-      </div>
-      <div className="card">
-        <div className="row">
-          <div>
-            <div className="title">Capacity opportunity found</div>
-            <div className="muted">Edison pickup can fit with your current Philly route.</div>
-          </div>
-          <span className="pill">+$285</span>
-        </div>
-        <button className="primary" style={{width:'100%', marginTop: 14}} onClick={() => setTab('loads')}>Review Partial Load</button>
-      </div>
-      {['Newark → Philly Partial', 'Elizabeth Warehouse Pickup', 'Jersey City Mixed Freight'].map((x, i) => (
-        <div className="card" key={x}>
-          <div className="row"><div><div className="title">{x}</div><div className="muted">{i === 1 ? 'Draft' : 'Optimized'} • {i === 0 ? '2 pallets open' : 'Review plan'}</div></div><span className="pill">{i === 1 ? '—' : 92 - i}</span></div>
-        </div>
-      ))}
+function HomeScreen({ setTab, openLoad, openOpps }) {
+  const topOpps = sortedOpps(opportunities).slice(0,3)
+  return <><Header title="Know Before You Load." subtitle="Plan, optimize, and monetize open capacity before the dock." /><div className="content">
+    <div className="card hero"><div className="row"><span className="pill">Capacity Intelligence</span><Zap /></div><div><div className="big">$1,870</div><p className="subtitle">Ranked partial-load opportunities near active routes.</p></div></div>
+    <div className="grid"><button className="primary" onClick={()=>setTab('loads')}><Plus size={18}/> New Load</button><button className="secondary" onClick={()=>setTab('garage')}><Truck size={18}/> Add Truck</button></div>
+    <div className="card"><div className="row"><div><div className="title">Capacity opportunities</div><div className="muted">Sorted by revenue, rearrangement effort, then detour.</div></div><button className="secondary mini" onClick={openOpps}>View All ({opportunities.length})</button></div>
+      {topOpps.map(o => <div className="card" key={o.id} style={{margin:'10px 0 0'}}><div className="row"><div><div className="title">{o.title}</div><div className="muted">{o.route} | {o.effort}</div></div><span className="pill">+<Money value={o.revenue}/></span></div><button className="primary" style={{width:'100%',marginTop:10}} onClick={()=>openLoad('partial', o)}>Review Partial Load</button></div>)}
     </div>
-  </>
+    <div className="card"><div className="title">Existing loads</div>{routeLoads.map(load => <button key={load.id} className="card" style={{width:'100%',textAlign:'left',margin:'10px 0 0'}} onClick={()=>openLoad('existing', null, load)}><div className="row"><div><div className="title">{load.name}</div><div className="muted">{load.status} • Revenue <Money value={load.revenue}/> • Fuel <Money value={load.fuelCost}/></div></div><span className="pill">{load.score || 'Draft'}</span></div></button>)}</div>
+  </div></>
 }
 
-function Garage({ setTab }) {
-  return <>
-    <Header kicker="Vehicle Platform" title="Truck Garage" subtitle="Manage verified Digital Twins for every cargo space." />
-    <div className="content">
-      {trucks.map(t => <div className="card" key={t.name}>
-        <div className="row"><div className="icon"><Truck /></div><span className="pill">{t.status}</span></div>
-        <h2>{t.name}</h2><p className="subtitle">{t.type}</p>
-        <div className="row"><span className="muted">Last utilization</span><strong>{t.utilization}%</strong></div>
-        <button className="primary" style={{width:'100%', marginTop: 16}} onClick={() => setTab('loads')}>Launch New Load</button>
-      </div>)}
-    </div>
-  </>
-}
-
-function DraggableCargo({ box, updateBox }) {
-  return (
-    <motion.div
-      className={'cargo-box ' + (box.extra ? 'extra' : '')}
-      drag
-      dragMomentum={false}
-      dragConstraints={{ left: -box.x, right: 340 - box.x - box.w, top: -box.y, bottom: 260 - box.y - box.h }}
-      onDragEnd={(_, info) => {
-        updateBox(box.id, {
-          x: Math.max(0, Math.min(340 - box.w, box.x + info.offset.x)),
-          y: Math.max(0, Math.min(260 - box.h, box.y + info.offset.y))
-        })
-      }}
-      whileDrag={{ scale: 1.06, zIndex: 10 }}
-      style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
-    >
-      {box.label}
-    </motion.div>
-  )
-}
-
-function Loads() {
-  const [stage, setStage] = useState('workspace')
-  const [boxes, setBoxes] = useState(initialBoxes)
+function Loads({ mode, selectedOpp, selectedRoute }) {
+  const [showIntake, setShowIntake] = useState(false)
+  const [stage, setStage] = useState(mode === 'partial' ? 'partial' : 'planner')
   const [view, setView] = useState('top')
-  const [toast, setToast] = useState('Drag cargo blocks to manually adjust the load plan.')
-  const opp = partialOpportunities[0]
-
-  function updateBox(id, pos) {
-    setBoxes(prev => prev.map(b => b.id === id ? { ...b, ...pos } : b))
-    setToast('Position updated. Progress auto-saved.')
-    setTimeout(() => setToast(''), 1800)
-  }
-
-  function acceptPartial() {
-    setBoxes(prev => [
-      ...prev,
-      { id: 'NEW1', label: 'NEW P1', x: 248, y: 102, w: 72, h: 60, extra: true },
-      { id: 'NEW2', label: 'NEW P2', x: 248, y: 170, w: 72, h: 60, extra: true }
-    ])
-    setStage('accepted')
-    setToast('Additional partial load added to workspace.')
-    setTimeout(() => setToast(''), 1800)
-  }
-
-  return <>
-    <Header
-      kicker="Planning Platform"
-      title={stage === 'results' || stage === 'accepted' ? 'LoadLogic Results' : stage === 'opportunity' ? 'Partial Load Match' : 'Load Workspace'}
-      subtitle={stage === 'opportunity' ? 'Capacity Intelligence found freight that fits your open space.' : stage === 'accepted' ? 'Additional freight added. Re-optimized capacity and payout.' : 'Drag cargo, review capacity, and optimize before loading.'}
-    />
-    <div className="content">
-      <div className="segmented">
-        <button className={view === 'top' ? 'active' : ''} onClick={() => setView('top')}>Top</button>
-        <button className={view === 'rear' ? 'active' : ''} onClick={() => setView('rear')}>Rear</button>
-        <button className={view === '3d' ? 'active' : ''} onClick={() => setView('3d')}>3D</button>
-      </div>
-
-      <div className="card">
-        <div className="row"><span className="pill">{view.toUpperCase()} VIEW</span><span className="pill"><Move size={12}/> Draggable</span></div>
-        <div className="truck-bed" style={{marginTop: 14}}>
-          <div className="capacity-zone">Open<br/>Capacity</div>
-          <div className="dock-label">REAR DOOR</div>
-          {boxes.map(b => <DraggableCargo key={b.id} box={b} updateBox={updateBox} />)}
-        </div>
-      </div>
-
-      {stage === 'workspace' && (
-        <div className="sheet">
-          <div className="row">
-            <div>
-              <div className="title">Current load draft</div>
-              <div className="muted">5 cargo groups • 6,840 lbs • 2 pallet positions open</div>
-            </div>
-            <PackagePlus />
-          </div>
-          <button className="primary" style={{width:'100%', marginTop: 14}} onClick={() => setStage('results')}>Optimize Load</button>
-          <button className="secondary" style={{width:'100%', marginTop: 10}} onClick={() => setStage('opportunity')}>Find Additional Partial Load</button>
-        </div>
-      )}
-
-      {stage === 'results' && (
-        <div className="card">
-          <div className="row"><div className="big" style={{fontSize:48}}>92</div><CheckCircle2 color="#45f0b4"/></div>
-          <h2>Fits with Rearrangement</h2>
-          <p className="subtitle">LoadLogic preserved 2 pallet positions and produced a safer rear-access sequence.</p>
-          <div className="grid" style={{marginTop: 14}}>
-            <button className="secondary" onClick={() => setStage('workspace')}>Edit</button>
-            <button className="primary" onClick={() => setStage('opportunity')}>Find Partial</button>
-          </div>
-        </div>
-      )}
-
-      {stage === 'opportunity' && (
-        <div className="card">
-          <div className="row">
-            <div className="icon"><MapPin /></div>
-            <span className="pill">{opp.confidence}</span>
-          </div>
-          <h2>{opp.title}</h2>
-          <p className="subtitle">{opp.route} • {opp.freight} • {opp.weight}</p>
-          <div className="card" style={{marginBottom: 0}}>
-            <div className="row"><span className="muted">Estimated payout</span><strong>{opp.payout}</strong></div>
-            <div className="row" style={{marginTop: 10}}><span className="muted">Fit reason</span><strong style={{textAlign:'right'}}>{opp.fit}</strong></div>
-          </div>
-          <div className="grid" style={{marginTop: 14}}>
-            <button className="danger" onClick={() => setStage('workspace')}><X size={16}/> Decline</button>
-            <button className="primary" onClick={acceptPartial}><DollarSign size={16}/> Add Load</button>
-          </div>
-        </div>
-      )}
-
-      {stage === 'accepted' && (
-        <div className="card">
-          <div className="row"><div className="big" style={{fontSize:48}}>96</div><span className="pill">+$285</span></div>
-          <h2>Additional Partial Accepted</h2>
-          <p className="subtitle">The Edison pickup was added to the rear-right capacity zone. Updated load score improved to 96 with 91% utilization.</p>
-          <button className="primary" style={{width:'100%', marginTop: 14}}>Share Updated Load Plan</button>
-          <button className="secondary" style={{width:'100%', marginTop: 10}} onClick={() => setStage('workspace')}>Keep Editing</button>
-        </div>
-      )}
+  const [items, setItems] = useState(mode === 'partial' ? markInvalid([...lockedExistingCargo, ...partialCargo]) : markInvalid(optimizedCargo.map(x=>({...x, ghost:true}))))
+  const [history, setHistory] = useState([])
+  const [redo, setRedo] = useState([])
+  const [selected, setSelected] = useState(null)
+  const [toast, setToast] = useState('LoadLogic default arrangement shown first. Manual edits unlock Proceed with Manual Plan.')
+  const manual = items.some(i => i.manual)
+  const route = selectedRoute || routeLoads[0]
+  const opp = selectedOpp || opportunities[0]
+  function commit(next, message){ setHistory(h=>[...h,items]); setRedo([]); setItems(markInvalid(next.map(i=>({...i, ghost:false})))); setToast(message); setTimeout(()=>setToast(''),1800) }
+  function updateItem(id, patch, message='Manual move saved.'){ commit(items.map(i=>i.id===id ? {...i,...patch,manual:true} : i), message) }
+  function undo(){ if(!history.length)return; const prev=history[history.length-1]; setRedo(r=>[items,...r]); setHistory(h=>h.slice(0,-1)); setItems(prev); setToast('Undone.') }
+  function redoMove(){ if(!redo.length)return; setHistory(h=>[...h,items]); setItems(redo[0]); setRedo(r=>r.slice(1)); setToast('Redone.') }
+  function optimize(){ const next = mode === 'partial' ? [...lockedExistingCargo, ...partialCargo] : optimizedCargo; commit(next.map(i=>({...i,ghost:false,optimized:true})), 'LoadLogic restored the best arrangement: weight distribution, rear-door access, and fit confidence improved.'); setStage(mode === 'partial' ? 'partialResults' : 'results') }
+  function rotateSelected(){ const target=items.find(i=>i.id===selected); if(!target || target.locked)return; updateItem(selected,{w:target.h,h:target.w},'Cargo rotated and snapped to grid.') }
+  return <><Header kicker="Planning Platform" title={stage.includes('partial')?'Partial Load Review':'Load Workspace'} subtitle={stage.includes('partial')?'Current load is locked in dark blue. New freight is tested against open capacity.':'Snap-to-grid planner with 0.25 inch pallet spacing logic.'}/><div className="content">
+    <div className="grid"><button className="primary" onClick={()=>setShowIntake(true)}><Plus size={16}/> New Load</button><button className="secondary" onClick={optimize}><SlidersHorizontal size={16}/> Optimize Load</button></div>
+    <div className="segmented">{['top','rear','3d'].map(v=><button key={v} className={view===v?'active':''} onClick={()=>setView(v)}>{v.toUpperCase()}</button>)}</div>
+    <div className="card"><div className="row"><span className="pill"><Move size={12}/> Drag • Snap Grid</span><span className="pill">¼ in spacing</span></div>{view==='top'&&<TopView items={items} updateItem={updateItem} setSelected={setSelected}/>} {view==='rear'&&<RearView items={items}/>} {view==='3d'&&<ThreeDView items={items}/>}</div>
+    <div className="sheet"><div className="row"><button className="secondary" onClick={undo} disabled={!history.length}><Undo2 size={16}/> Undo</button><button className="secondary" onClick={redoMove} disabled={!redo.length}><Redo2 size={16}/> Redo</button><button className="secondary" onClick={rotateSelected}><RotateCw size={16}/> Rotate</button></div>
+      <div className="card" style={{marginBottom:0}}><div className="row"><span className="muted">Base load revenue</span><strong><Money value={route.revenue}/></strong></div><div className="row"><span className="muted">Estimated fuel cost</span><strong><Money value={route.fuelCost}/></strong></div>{stage.includes('partial')&&<><div className="row"><span className="muted">Partial revenue</span><strong><Money value={opp.revenue}/></strong></div><div className="row"><span className="muted">Partial fuel add-on</span><strong><Money value={opp.fuelCost}/></strong></div></>}</div>
+      {manual?<button className="primary" style={{width:'100%',marginTop:12}}>Proceed with Manual Plan</button>:<p className="muted" style={{textAlign:'center'}}>Manual plan button unlocks after first edit.</p>}
+      {stage==='results'&&<ResultCard score={92}/>} {stage==='partialResults'&&<ResultCard score={96} partial/>}
     </div>
-
-    <AnimatePresence>
-      {toast && <motion.div className="toast" initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}}>
-        <div className="title">{toast}</div>
-      </motion.div>}
-    </AnimatePresence>
-  </>
+  </div><AnimatePresence>{showIntake&&<NewLoadModal close={()=>setShowIntake(false)}/>}</AnimatePresence><AnimatePresence>{toast&&<motion.div className="toast" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}><div className="title">{toast}</div></motion.div>}</AnimatePresence></>
 }
 
-function Cargo() {
-  return <>
-    <Header kicker="Freight Platform" title="Cargo Library" subtitle="Reusable freight profiles for faster load creation." />
-    <div className="content">
-      {cargo.map(c => <div className="card" key={c.name}><div className="row"><div className="icon"><Boxes /></div><span className="pill">Qty {c.qty}</span></div><h2>{c.name}</h2><p className="subtitle">{c.dims} • {c.weight}</p></div>)}
-    </div>
-  </>
-}
-
-function Profile() {
-  return <>
-    <Header kicker="Identity Platform" title="Profile" subtitle="Account, settings, subscription, and support." />
-    <div className="content">
-      {['Owner-Operator Role', 'Offline Sync', 'Units of Measure', 'Subscription', 'Help Center'].map(x => <div className="card" key={x}><div className="row"><div className="title">{x}</div><span className="muted">›</span></div></div>)}
-    </div>
-  </>
-}
-
-function App() {
-  const [tab, setTab] = useState('home')
-  return <div className="wrap"><div className="phone">
-    <div className="island"></div><div className="status"><span>9:41</span><span>5G ▰</span></div>
-    <AnimatePresence mode="wait"><motion.div key={tab} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:.2}}>
-      {tab === 'home' && <HomeScreen setTab={setTab}/>}
-      {tab === 'garage' && <Garage setTab={setTab}/>}
-      {tab === 'loads' && <Loads/>}
-      {tab === 'cargo' && <Cargo/>}
-      {tab === 'profile' && <Profile/>}
-    </motion.div></AnimatePresence>
-    <nav className="tabs">{tabs.map(([id,label,Icon]) => <button key={id} className={'tab '+(tab===id?'active':'')} onClick={() => setTab(id)}><Icon size={20}/><span>{label}</span></button>)}</nav>
-  </div></div>
-}
-
-createRoot(document.getElementById('root')).render(<App />)
+function TopView({items, updateItem, setSelected}){ return <div className="truck-bed" style={{marginTop:14}}><div className="capacity-zone">Open<br/>Capacity</div><div className="dock-label">REAR DOOR</div>{items.map(b=><motion.div key={b.id} className={`cargo-box ${b.locked?'locked':''} ${b.invalid?'invalid':''} ${b.newLoad?'newLoad':''}`} drag={!b.locked} dragMomentum={false} dragConstraints={{left:-b.x,right:BED_W-b.x-b.w,top:-b.y,bottom:BED_H-b.y-b.h}} onTap={()=>setSelected(b.id)} onDragEnd={(_,info)=>{if(b.locked)return; const x=Math.max(0,Math.min(BED_W-b.w,snap(b.x+info.offset.x))); const y=Math.max(0,Math.min(BED_H-b.h,snap(b.y+info.offset.y))); updateItem(b.id,{x,y},'Cargo snapped to grid. Fit revalidated.')}} whileDrag={{scale:1.05,zIndex:10}} style={{left:b.x,top:b.y,width:b.w,height:b.h,opacity:b.ghost?.55:1}}>{b.label}{b.locked&&<span className="lock-badge"><Lock size={12}/></span>}</motion.div>)}</div> }
+function RearView({items}){ return <div className="truck-bed rear" style={{marginTop:14}}><div className="muted" style={{position:'absolute',left:14,top:10}}>Rear view: width × height, stacked clearance</div>{items.map((b,idx)=>{const left=18+(idx%4)*76; const height=Math.max(42,Math.min(180,b.z*2.2)); return <div key={b.id} className={`stack ${b.locked?'locked':''}`} style={{left,bottom:18,width:58,height}}>{b.label}<br/>{b.z}"</div>})}</div> }
+function ThreeDView({items}){ return <div className="truck-bed iso" style={{marginTop:14}}><div className="muted" style={{position:'absolute',left:14,top:10}}>45° 3D volume render</div><div className="iso-stage"><div className="iso-floor"></div>{items.map(b=><div key={b.id} className={`cube ${b.locked?'locked':''} ${b.invalid?'invalid':''}`} style={{left:b.x*.75,top:b.y*.65,width:b.w*.75,height:b.h*.65,transform:`translateZ(${b.z*.25}px)`}}><div className="face" style={{width:b.w*.75,height:b.h*.65}}></div></div>)}</div></div> }
+function ResultCard({score, partial}){ return <div className="card"><div className="row"><div className="big" style={{fontSize:46}}>{score}</div><CheckCircle2 color="#45f0b4"/></div><h2>{partial?'Partial Load Accepted':'Best LoadLogic Arrangement'}</h2><p className="subtitle">Reasoning: fit confidence, weight distribution, rear-door access sequence, pallet spacing, and lowest rearrangement effort.</p></div> }
+function NewLoadModal({close}){ return <motion.div className="modal" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}><motion.div className="modal-card" initial={{y:40}} animate={{y:0}} exit={{y:40}}><h2>Create New Load</h2><p className="subtitle">Start with an import document or enter pallet measurements manually.</p><button className="primary" style={{width:'100%',marginTop:14}}><Upload size={18}/> Upload BOL / Rate Con / CSV</button><button className="secondary" style={{width:'100%',marginTop:10}}><PencilRuler size={18}/> Enter Pallet Measurements</button><button className="danger" style={{width:'100%',marginTop:10}} onClick={close}>Cancel</button></motion.div></motion.div> }
+function OpportunitiesModal({close,openLoad}){ const list=sortedOpps(opportunities); return <motion.div className="modal" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}><motion.div className="modal-card" initial={{y:40}} animate={{y:0}} exit={{y:40}}><div className="row"><h2>All Capacity Matches</h2><button className="danger" onClick={close}>Close</button></div><p className="subtitle">Ranked by revenue, rearrangement effort, then detour.</p><div style={{maxHeight:440,overflow:'auto'}}>{list.map(o=><div className="card" key={o.id}><div className="row"><div><div className="title">{o.title}</div><div className="muted">{o.route} | {o.effort}</div></div><span className="pill">+<Money value={o.revenue}/></span></div><div className="row" style={{marginTop:8}}><span className="muted">{o.dims}</span><span className="pill">{o.confidence}%</span></div><button className="primary" style={{width:'100%',marginTop:10}} onClick={()=>openLoad('partial',o)}>Review</button></div>)}</div></motion.div></motion.div> }
+function Garage(){ return <><Header kicker="Vehicle Platform" title="Truck Garage" subtitle="Verified Digital Twins for every cargo space."/><div className="content"><div className="card"><Truck/><h2>2022 Ford E-450</h2><p className="subtitle">26 ft box truck • Verified Digital Twin</p></div></div></> }
+function Cargo(){ return <><Header kicker="Freight Platform" title="Cargo Library" subtitle="Reusable freight profiles."/><div className="content">{['Standard Pallet','Appliance Crate','Furniture Bundle'].map(x=><div className="card" key={x}><Boxes/><h2>{x}</h2><p className="subtitle">Saved dimensions, weight, stacking, and rotation rules.</p></div>)}</div></> }
+function Profile(){ return <><Header kicker="Identity Platform" title="Profile" subtitle="Settings and account."/><div className="content">{['Owner-Operator','Offline Sync','Units of Measure','Subscription'].map(x=><div className="card" key={x}><div className="row"><div className="title">{x}</div><span>›</span></div></div>)}</div></> }
+function App(){ const [tab,setTab]=useState('home'); const [mode,setMode]=useState('planner'); const [selectedOpp,setSelectedOpp]=useState(null); const [selectedRoute,setSelectedRoute]=useState(routeLoads[0]); const [oppModal,setOppModal]=useState(false); function openLoad(nextMode,opp=null,route=routeLoads[0]){setMode(nextMode);setSelectedOpp(opp);setSelectedRoute(route);setTab('loads');setOppModal(false)} return <div className="wrap"><div className="phone"><div className="island"></div><div className="status"><span>9:41</span><span>5G ▰</span></div><AnimatePresence mode="wait"><motion.div key={tab+mode+(selectedOpp?.id||'')} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:.2}}>{tab==='home'&&<HomeScreen setTab={setTab} openLoad={openLoad} openOpps={()=>setOppModal(true)}/>} {tab==='garage'&&<Garage/>} {tab==='loads'&&<Loads mode={mode} selectedOpp={selectedOpp} selectedRoute={selectedRoute}/>} {tab==='cargo'&&<Cargo/>} {tab==='profile'&&<Profile/>}</motion.div></AnimatePresence><nav className="tabs">{tabs.map(([id,label,Icon])=><button key={id} className={'tab '+(tab===id?'active':'')} onClick={()=>setTab(id)}><Icon size={20}/><span>{label}</span></button>)}</nav><AnimatePresence>{oppModal&&<OpportunitiesModal close={()=>setOppModal(false)} openLoad={openLoad}/>}</AnimatePresence></div></div> }
+createRoot(document.getElementById('root')).render(<App/>)
