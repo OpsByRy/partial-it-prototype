@@ -1,22 +1,16 @@
 # Partial-It Prototype
 
-Interactive React/Vite prototype for Partial-It.
+Updated interactive React/Vite prototype for Partial-It.
 
-## Included
+## v1.1 Updates
 
-- React + Vite
-- Mobile iOS-style prototype
-- Dashboard
-- Truck Garage
-- Cargo Library
-- Load Workspace
-- Optimization Results
-- Share-ready GitHub Pages workflow
+- Draggable cargo blocks in Load Workspace
+- Manual cargo repositioning simulation
+- Remaining capacity click-through
+- Additional partial load opportunity flow
+- Accept/reject partial load interaction
+- Updated LoadLogic results after accepting the additional freight
 
-## Important
+## Deploy
 
-macOS hides `.github` folders in Finder. This package includes a visible backup at:
-
-`workflow-file-to-copy/deploy.yml`
-
-If GitHub does not show `.github/workflows/deploy.yml` after upload, create it manually in GitHub and paste the contents from that backup file.
+Upload/replace these files in GitHub and commit to `main`. GitHub Actions will redeploy automatically.

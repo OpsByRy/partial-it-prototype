@@ -8,3 +8,28 @@ export const cargo = [
   { name: "Appliance Crate", dims: "36 × 34 × 72 in", weight: "420 lbs", qty: 2 },
   { name: "Furniture Bundle", dims: "80 × 38 × 42 in", weight: "310 lbs", qty: 1 }
 ];
+
+export const partialOpportunities = [
+  {
+    id: 1,
+    title: "Pickup: Edison, NJ",
+    route: "Adds 18 miles",
+    payout: "$285",
+    freight: "2 standard pallets",
+    weight: "1,420 lbs",
+    dims: "48 × 40 × 46 in each",
+    fit: "Fits in remaining rear-right capacity",
+    confidence: "94% fit confidence"
+  },
+  {
+    id: 2,
+    title: "Pickup: Linden, NJ",
+    route: "Adds 9 miles",
+    payout: "$160",
+    freight: "1 appliance crate",
+    weight: "390 lbs",
+    dims: "36 × 34 × 60 in",
+    fit: "Requires unload sequence change",
+    confidence: "82% fit confidence"
+  }
+];
