@@ -1,0 +1,9 @@
+.github/workflows/deploy.yml
+README.md
+index.html
+package.json
+src/data/mockData.js
+src/main.jsx
+src/styles.css
+vite.config.js
+workflow-file-to-copy/deploy.yml
