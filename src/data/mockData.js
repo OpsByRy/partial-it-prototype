@@ -1,4 +1,4 @@
-export const truckSpec = { name:"53' Dry Van", type:"53 ft Dry Van", interiorLength:636, interiorWidth:100, interiorHeight:110, payloadLimit:45000, mpg:6.8, gasPrice:3.42 };
+export const truckSpec = { name:"30' Box Truck", type:"30 ft Box Truck", interiorLength:360, interiorWidth:96, interiorHeight:102, payloadLimit:12000, mpg:8.7, gasPrice:3.42 };
 export const existingLoad = { id:"newark-philly", name:"Newark, NJ → Philadelphia, PA", status:"Optimized", revenue:1180, fuelCost:96, miles:94, score:92, utilization:74, weight:3350 };
 export const opportunities = [
  { id:"edison", loadId:"PL-2026-001", title:"Edison, NJ → Cherry Hill, NJ", route:"Along route", effort:"No rearrangements", revenue:285, fuelCost:18, confidence:96, dims:"2 pallets • 48×40×46", weight:1420 },
