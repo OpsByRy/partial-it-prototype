@@ -17,3 +17,11 @@ Updates:
 - Added partial Load ID numbers to partial-load cards.
 - Simplified 45° view to clean volume cubes/cuboids representing parcel volume.
 - Reduced visual clutter from extra angled face geometry.
+
+
+## v3.2 updates
+
+- Corrected 3D view: cargo is now true rectangular-prism geometry.
+- Removed skewed/diamond-like cube styling.
+- The camera/view is angled; the pallet/carton geometry stays square/rectangular.
+- Cargo labels remain generic pallet/item identifiers.

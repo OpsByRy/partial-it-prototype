@@ -63,3 +63,117 @@
   background:linear-gradient(135deg,#ff5a5a,#991b1b);
   color:#fff;
 }
+
+/* v3.2: true rectangular-prism cargo. The camera is angled; the cargo is not skewed. */
+.camera-stage{
+  position:absolute;
+  left:48px;
+  top:116px;
+  width:292px;
+  height:122px;
+  transform-style:preserve-3d;
+  transform:rotateX(60deg) rotateZ(-34deg);
+}
+.trailer-3d-floor{
+  position:absolute;
+  width:292px;
+  height:122px;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(77,163,255,.12),rgba(255,255,255,.03));
+  background-size:8px 8px,8px 8px,auto;
+  border:2px solid rgba(169,213,255,.30);
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
+}
+.trailer-3d-left-wall{
+  position:absolute;
+  width:292px;
+  height:82px;
+  background:rgba(255,255,255,.075);
+  transform-origin:top;
+  transform:rotateX(90deg);
+  border:1px solid rgba(255,255,255,.14);
+}
+.trailer-3d-right-wall{
+  position:absolute;
+  left:292px;
+  width:122px;
+  height:82px;
+  background:rgba(255,255,255,.045);
+  transform-origin:left;
+  transform:rotateY(90deg);
+  border:1px solid rgba(255,255,255,.11);
+}
+.prism{
+  position:absolute;
+  width:var(--w);
+  height:var(--d);
+  transform-style:preserve-3d;
+}
+.prism-face{
+  position:absolute;
+  box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.22);
+  background:linear-gradient(135deg,#54f0b7,#4da3ff);
+}
+.prism-front{
+  width:var(--w);
+  height:var(--h);
+  transform:translateY(calc(var(--d) - var(--h))) translateZ(var(--d));
+  display:grid;
+  place-items:center;
+  color:#04101b;
+  font-size:9px;
+  font-weight:950;
+}
+.prism-back{
+  width:var(--w);
+  height:var(--h);
+  transform:translateY(calc(var(--d) - var(--h)));
+  filter:brightness(.82);
+}
+.prism-left{
+  width:var(--d);
+  height:var(--h);
+  transform-origin:left;
+  transform:rotateY(-90deg) translateX(calc(-1 * var(--d))) translateY(calc(var(--d) - var(--h)));
+  filter:brightness(.75);
+}
+.prism-right{
+  width:var(--d);
+  height:var(--h);
+  left:var(--w);
+  transform-origin:left;
+  transform:rotateY(90deg) translateY(calc(var(--d) - var(--h)));
+  filter:brightness(.7);
+}
+.prism-top{
+  width:var(--w);
+  height:var(--d);
+  transform:translateZ(var(--h));
+  background:linear-gradient(135deg,#9fffe0,#70bdff);
+}
+.prism-bottom{
+  width:var(--w);
+  height:var(--d);
+  filter:brightness(.45);
+}
+.prism.locked .prism-face{
+  background:linear-gradient(135deg,#0c3b70,#071f3a);
+  color:#c2e6ff;
+}
+.prism.new .prism-face{
+  background:linear-gradient(135deg,#facc15,#fb923c);
+}
+.prism.new .prism-top{
+  background:linear-gradient(135deg,#fde68a,#fdba74);
+}
+.prism.invalid .prism-face{
+  background:linear-gradient(135deg,#ff5a5a,#991b1b);
+  color:#fff;
+}
+.prism span{
+  position:relative;
+  z-index:2;
+}
