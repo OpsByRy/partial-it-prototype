@@ -6,3 +6,60 @@
 .side-trailer{position:absolute;left:22px;right:22px;top:96px;height:152px;border:8px solid rgba(206,220,232,.22);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.18));overflow:hidden}.side-trailer:before{content:"";position:absolute;left:0;right:0;bottom:0;height:13px;background:#3a4857}.side-box{position:absolute;border-radius:7px 7px 2px 2px;box-shadow:0 11px 20px rgba(0,0,0,.35);background:linear-gradient(180deg,#54f0b7,#4da3ff);display:grid;place-items:center;font-size:8px;font-weight:950;color:#04101b}.side-box.locked{background:linear-gradient(180deg,#0c3b70,#071f3a);color:#c2e6ff}.side-box.new{background:linear-gradient(180deg,#facc15,#fb923c)}.side-box.invalid{background:linear-gradient(180deg,#ff5a5a,#991b1b);color:#fff}
 .iso-stage{position:absolute;left:54px;top:112px;width:260px;height:154px;transform:rotateX(58deg) rotateZ(-38deg);transform-style:preserve-3d}.iso-floor{position:absolute;width:292px;height:122px;background:linear-gradient(135deg,rgba(77,163,255,.12),rgba(255,255,255,.03));border:2px solid rgba(169,213,255,.28);box-shadow:0 18px 45px rgba(0,0,0,.45)}.iso-wall-left{position:absolute;width:292px;height:86px;background:rgba(255,255,255,.075);transform-origin:top;transform:rotateX(90deg);border:1px solid rgba(255,255,255,.15)}.iso-wall-side{position:absolute;left:292px;width:122px;height:86px;background:rgba(255,255,255,.045);transform-origin:left;transform:rotateY(90deg);border:1px solid rgba(255,255,255,.12)}.iso-cube{position:absolute;transform-style:preserve-3d}.iso-cube .front,.iso-cube .top,.iso-cube .side{position:absolute;border:1px solid rgba(255,255,255,.24);border-radius:3px}.iso-cube .front{background:linear-gradient(135deg,#54f0b7,#4da3ff)}.iso-cube .top{background:linear-gradient(135deg,#9fffe0,#70bdff);transform-origin:top;transform:rotateX(90deg)}.iso-cube .side{background:linear-gradient(135deg,#2dd4bf,#2563eb);transform-origin:right;transform:rotateY(90deg)}.iso-cube.locked .front,.iso-cube.locked .top,.iso-cube.locked .side{background:linear-gradient(135deg,#0c3b70,#071f3a)}.iso-cube.new .front,.iso-cube.new .top,.iso-cube.new .side{background:linear-gradient(135deg,#facc15,#fb923c)}.iso-cube.invalid .front,.iso-cube.invalid .top,.iso-cube.invalid .side{background:linear-gradient(135deg,#ff5a5a,#991b1b)}
 .toast{position:absolute;left:24px;right:24px;top:76px;background:rgba(5,15,27,.96);border:1px solid rgba(69,240,180,.35);border-radius:20px;padding:14px;z-index:20;box-shadow:0 18px 50px rgba(0,0,0,.38)}.modal{position:absolute;inset:0;background:rgba(0,0,0,.48);z-index:11;display:grid;place-items:end center;padding:18px}.modal-card{width:100%;max-height:88%;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:30px;background:rgba(9,18,31,.97);border:1px solid rgba(255,255,255,.14);padding:18px;box-shadow:0 28px 80px rgba(0,0,0,.52)}
+
+/* v3.1: simplified 45-degree cuboids */
+.iso-stage.simple{
+  top:122px;
+  transform:rotateX(58deg) rotateZ(-38deg);
+}
+.simple-cube{
+  position:absolute;
+  transform-style:preserve-3d;
+  border-radius:6px;
+  background:linear-gradient(135deg,#54f0b7,#4da3ff);
+  box-shadow:0 14px 26px rgba(0,0,0,.42);
+  display:grid;
+  place-items:center;
+  color:#04101b;
+  font-size:9px;
+  font-weight:950;
+  border:1px solid rgba(255,255,255,.28);
+}
+.simple-cube::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:var(--cubeH);
+  bottom:100%;
+  transform-origin:bottom;
+  transform:skewX(-24deg);
+  border-radius:6px 6px 0 0;
+  background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.04)),linear-gradient(135deg,#9fffe0,#70bdff);
+  border:1px solid rgba(255,255,255,.18);
+}
+.simple-cube::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:var(--cubeH);
+  left:100%;
+  transform-origin:left;
+  transform:skewY(-24deg);
+  border-radius:0 6px 6px 0;
+  background:linear-gradient(135deg,#2dd4bf,#2563eb);
+  border:1px solid rgba(255,255,255,.16);
+}
+.simple-cube span{position:relative;z-index:2}
+.simple-cube.locked,.simple-cube.locked::before,.simple-cube.locked::after{
+  background:linear-gradient(135deg,#0c3b70,#071f3a);
+  color:#c2e6ff;
+}
+.simple-cube.new,.simple-cube.new::before,.simple-cube.new::after{
+  background:linear-gradient(135deg,#facc15,#fb923c);
+}
+.simple-cube.invalid,.simple-cube.invalid::before,.simple-cube.invalid::after{
+  background:linear-gradient(135deg,#ff5a5a,#991b1b);
+  color:#fff;
+}

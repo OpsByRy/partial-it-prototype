@@ -9,3 +9,11 @@ Updates:
 - Rear view is visual-only: open rear trailer, stacked blocks, internal clearance. No graph.
 - Smaller 2-inch snap grid.
 - Optimize Load restores saved LoadLogic plan; Undo returns to previous manual state.
+
+
+## v3.1 updates
+
+- Replaced city-style cargo labels with neutral pallet/item identifiers: P1, P2, P3, S1, N1, etc.
+- Added partial Load ID numbers to partial-load cards.
+- Simplified 45° view to clean volume cubes/cuboids representing parcel volume.
+- Reduced visual clutter from extra angled face geometry.
